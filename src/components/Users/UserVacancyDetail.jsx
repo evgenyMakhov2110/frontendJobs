@@ -1,32 +1,40 @@
-import React, { useContext, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { VacanciesContext } from '../../context/VacanciesContext';
 
 const UserVacancyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { vacancies, setVacancies } = useContext(VacanciesContext);
-  const vacancy = vacancies.find(v => v.id === Number(id));
-
+  const [vacancy, setVacancy] = useState(null);
   const [phone, setPhone] = useState('');
   const [tg, setTg] = useState('');
 
+  useEffect(() => {
+    // Загружаем все вакансии и находим нужную по id
+    fetch(`${process.env.REACT_APP_API_URL}/api/vacancies`)
+      .then(res => res.json())
+      .then(data => {
+        const found = data.find(v => v.id === Number(id));
+        setVacancy(found);
+      })
+      .catch(err => console.error(err));
+  }, [id]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    setVacancies(vacancies.map(v => v.id === Number(id) ? {
-      ...v,
-      responses: [...v.responses, { phone, tg }]
-    } : v));
-
-    setPhone('');
-    setTg('');
-    alert('Отклик отправлен!');
-    navigate('/users');
+    fetch(`${process.env.REACT_APP_API_URL}/api/vacancies/${id}/apply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, telegram: tg })
+    })
+      .then(res => res.json())
+      .then(() => {
+        alert('Отклик отправлен!');
+        navigate('/users');
+      })
+      .catch(err => console.error(err));
   };
 
-  if (!vacancy) {
-    return <div>Вакансия не найдена</div>;
-  }
+  if (!vacancy) return <div style={{ padding: '20px' }}>Загрузка...</div>;
 
   return (
     <div style={{ padding: '20px' }}>
