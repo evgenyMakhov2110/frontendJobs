@@ -5,7 +5,11 @@ const UserPage = () => {
   const [vacancies, setVacancies] = useState([]);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/api/vacancies`)
+    fetch(`${process.env.REACT_APP_API_URL}/api/vacancies`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
       .then(res => res.json())
       .then(data => setVacancies(data))
       .catch(err => console.error(err));
@@ -19,7 +23,7 @@ const UserPage = () => {
         <div key={v.id} style={{ border: '1px solid #ccc', marginBottom: '10px', padding: '10px' }}>
           <h3>{v.title}</h3>
           <p>{v.description}</p>
-          <Link to={`/users/vacancy/${v.id}`}>Подробнее</Link>
+          <Link to={`/users/vacancy/${v.id}`} style={{ color: 'blue' }}>Подробнее</Link>
         </div>
       ))}
     </div>
@@ -27,4 +31,5 @@ const UserPage = () => {
 };
 
 export default UserPage;
+
 

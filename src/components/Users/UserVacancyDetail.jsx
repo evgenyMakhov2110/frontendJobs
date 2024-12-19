@@ -9,8 +9,11 @@ const UserVacancyDetail = () => {
   const [tg, setTg] = useState('');
 
   useEffect(() => {
-    // Загружаем все вакансии и находим нужную по id
-    fetch(`${process.env.REACT_APP_API_URL}/api/vacancies`)
+    fetch(`${process.env.REACT_APP_API_URL}/api/vacancies`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
       .then(res => res.json())
       .then(data => {
         const found = data.find(v => v.id === Number(id));
@@ -23,10 +26,16 @@ const UserVacancyDetail = () => {
     e.preventDefault();
     fetch(`${process.env.REACT_APP_API_URL}/api/vacancies/${id}/apply`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
       body: JSON.stringify({ phone, telegram: tg })
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Ошибка при отправке отклика');
+        return res.json();
+      })
       .then(() => {
         alert('Отклик отправлен!');
         navigate('/users');
@@ -46,9 +55,21 @@ const UserVacancyDetail = () => {
       <h3>Откликнуться на вакансию</h3>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '300px' }}>
         <label>Телефон:</label>
-        <input value={phone} onChange={e => setPhone(e.target.value)} required />
+        <input 
+          type="text" 
+          value={phone} 
+          onChange={e => setPhone(e.target.value)} 
+          required 
+        />
+
         <label>Telegram:</label>
-        <input value={tg} onChange={e => setTg(e.target.value)} required />
+        <input 
+          type="text" 
+          value={tg} 
+          onChange={e => setTg(e.target.value)} 
+          required 
+        />
+
         <button type="submit">Отправить</button>
       </form>
     </div>
@@ -56,3 +77,4 @@ const UserVacancyDetail = () => {
 };
 
 export default UserVacancyDetail;
+

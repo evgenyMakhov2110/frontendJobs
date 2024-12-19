@@ -10,10 +10,16 @@ const AddVacancyForm = () => {
     e.preventDefault();
     fetch(`${process.env.REACT_APP_API_URL}/api/vacancies`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
       body: JSON.stringify({ title, date, salary, description })
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Ошибка при добавлении вакансии');
+        return res.json();
+      })
       .then(() => {
         alert('Вакансия добавлена!');
         setTitle('');
@@ -25,18 +31,37 @@ const AddVacancyForm = () => {
   };
 
   return (
-    <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', maxWidth: '300px' }}>
+    <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', maxWidth: '300px', marginBottom: '20px' }}>
       <label>Название вакансии:</label>
-      <input value={title} onChange={e => setTitle(e.target.value)} required />
+      <input 
+        type="text" 
+        value={title} 
+        onChange={e => setTitle(e.target.value)} 
+        required 
+      />
 
       <label>Дата публикации:</label>
-      <input type="date" value={date} onChange={e => setDate(e.target.value)} required />
+      <input 
+        type="date" 
+        value={date} 
+        onChange={e => setDate(e.target.value)} 
+        required 
+      />
 
       <label>Зарплата:</label>
-      <input value={salary} onChange={e => setSalary(e.target.value)} required />
+      <input 
+        type="text" 
+        value={salary} 
+        onChange={e => setSalary(e.target.value)} 
+        required 
+      />
 
       <label>Описание:</label>
-      <textarea value={description} onChange={e => setDescription(e.target.value)} required />
+      <textarea 
+        value={description} 
+        onChange={e => setDescription(e.target.value)} 
+        required 
+      />
 
       <button type="submit">Добавить</button>
     </form>
@@ -44,3 +69,4 @@ const AddVacancyForm = () => {
 };
 
 export default AddVacancyForm;
+

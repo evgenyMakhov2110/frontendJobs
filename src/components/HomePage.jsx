@@ -1,20 +1,23 @@
-// src/components/HomePage.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-//import './styles.css'; // Предполагаем, что стили подключаются отсюда
 
 const HomePage = () => {
   const navigate = useNavigate();
 
+  const handleNavigate = (role) => {
+    navigate(`/login?role=${role}`);
+  };
+
   return (
-    <div className="home-container">
-      <h1>Выберите роль</h1>
-      <div className="btn-group">
-        <button onClick={() => navigate('/admin')}>Administrator</button>
-        <button onClick={() => navigate('/users')}>Users</button>
+    <div className="home-container" style={{ padding: '20px' }}>
+      <h1>Добро пожаловать в наше приложение</h1>
+      <div className="btn-group" style={{ display: 'flex', gap: '10px' }}>
+        <button onClick={() => handleNavigate('admin')}>Administrator</button>
+        <button onClick={() => handleNavigate('users')}>Users</button>
       </div>
     </div>
   );
 };
 
 export default HomePage;
+

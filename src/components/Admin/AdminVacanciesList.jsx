@@ -4,7 +4,11 @@ const AdminVacanciesList = () => {
   const [vacancies, setVacancies] = useState([]);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/api/vacancies`)
+    fetch(`${process.env.REACT_APP_API_URL}/api/vacancies`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
       .then(res => res.json())
       .then(data => setVacancies(data))
       .catch(err => console.error(err));
@@ -22,7 +26,7 @@ const AdminVacanciesList = () => {
           <h4>Отклики:</h4>
           {v.responses.length === 0 && <p>Пока нет откликов</p>}
           {v.responses.map((r, index) => (
-            <div key={index}>
+            <div key={index} style={{ marginBottom: '5px' }}>
               <p>Телефон: {r.phone}</p>
               <p>Telegram: {r.telegram}</p>
             </div>
@@ -34,3 +38,4 @@ const AdminVacanciesList = () => {
 };
 
 export default AdminVacanciesList;
+
